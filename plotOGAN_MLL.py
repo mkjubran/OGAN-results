@@ -67,7 +67,7 @@ batch=100
 df=dfall[dfall['dataset']==dataset]
 
 fig, axs = plt.subplots(2,3)
-fig.suptitle('MNIST ImageSize=32x32')
+fig.suptitle('CIFAR10 ImageSize=32x32')
 fig.tight_layout()
 
 axs[0,0].plot(df.epochs,df.DCGAN_train_G1_G2, 'ob:', linewidth=2, label='DCGAN')
