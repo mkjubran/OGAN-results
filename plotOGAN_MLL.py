@@ -111,57 +111,76 @@ axs[1,2].grid()
 #plt.show()
 
 ##--------- mnist32: moving average of LL values per batch
-# DCGAN_Step=3000
-#fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step2000Repeat/likelihood_G1_E2.pkl'
-#with open(fname, 'rb') as f:
-#   DCGAN_LL_G2_Step2000=pickle.load(f)
+##-- DCGAN - G2
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G1_E2.pkl';
+Steps=[2000,3000,4000,5000]
 
-#fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step3000Repeat/likelihood_G1_E2.pkl'
-#with open(fname, 'rb') as f:
-#   DCGAN_LL_G2_Step3000=pickle.load(f)
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
 
-fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step4000Repeat/likelihood_G1_E2.pkl'
-with open(fname, 'rb') as f:
-   DCGAN_LL_G2_Step4000=pickle.load(f)
+DCGAN_LL_G2 = GAN_LL
+DCGAN_LL_G2_MovingAverage = GAN_LL_MovingAverage
 
-fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step5000Repeat/likelihood_G1_E2.pkl'
-with open(fname, 'rb') as f:
-   DCGAN_LL_G2_Step5000=pickle.load(f)
+#-- DCGAN - G1
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G2_E1.pkl';
+Steps=[2000,3000,4000,5000]
 
-fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step4000Repeat/likelihood_G1_E2.pkl'
-with open(fname, 'rb') as f:
-   OGAN_LL_G2_Step4000=pickle.load(f)
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
 
-fname='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step5000Repeat/likelihood_G1_E2.pkl'
-with open(fname, 'rb') as f:
-   OGAN_LL_G2_Step5000=pickle.load(f)
+DCGAN_LL_G1 = GAN_LL
+DCGAN_LL_G1_MovingAverage = GAN_LL_MovingAverage
 
-#DCGAN_LL_G2_Step2000_MovingAverage=[]
-#DCGAN_LL_G2_Step3000_MovingAverage=[]
-DCGAN_LL_G2_Step4000_MovingAverage=[]
-DCGAN_LL_G2_Step5000_MovingAverage=[]
-OGAN_LL_G2_Step4000_MovingAverage=[]
-OGAN_LL_G2_Step5000_MovingAverage=[]
-for cnt in range(1,len(DCGAN_LL_G2_Step5000)):
-   #DCGAN_LL_G2_Step2000_MovingAverage.append(statistics.mean(DCGAN_LL_G2_Step2000[0:cnt]))
-   #DCGAN_LL_G2_Step3000_MovingAverage.append(statistics.mean(DCGAN_LL_G2_Step3000[0:cnt]))
-   DCGAN_LL_G2_Step4000_MovingAverage.append(statistics.mean(DCGAN_LL_G2_Step4000[0:cnt]))
-   DCGAN_LL_G2_Step5000_MovingAverage.append(statistics.mean(DCGAN_LL_G2_Step5000[0:cnt]))
-   OGAN_LL_G2_Step4000_MovingAverage.append(statistics.mean(OGAN_LL_G2_Step4000[0:cnt]))
-   OGAN_LL_G2_Step5000_MovingAverage.append(statistics.mean(OGAN_LL_G2_Step5000[0:cnt]))
+#-- DCGAN - test G2
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G1test_E2.pkl';
+Steps=[2000,3000,4000,5000]
 
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
 
+DCGAN_LL_test_G2 = GAN_LL
+DCGAN_LL_test_G2_MovingAverage = GAN_LL_MovingAverage
+
+#-- DCGAN - test G1
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.0_W20.0_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G2test_E1.pkl';
+Steps=[2000,3000,4000,5000]
+
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
+
+DCGAN_LL_test_G1 = GAN_LL
+DCGAN_LL_test_G1_MovingAverage = GAN_LL_MovingAverage
+
+## --- plot DCGAN 
 plt.figure()
-plt.plot(range(1,len(DCGAN_LL_G2_Step4000)),DCGAN_LL_G2_Step4000_MovingAverage,'b:', linewidth=2, label='Step4000')
-plt.plot(range(1,len(DCGAN_LL_G2_Step5000)),DCGAN_LL_G2_Step5000_MovingAverage,'r:', linewidth=2, label='Step5000')
-plt.plot(range(1,len(OGAN_LL_G2_Step4000)),OGAN_LL_G2_Step4000_MovingAverage,'b-', linewidth=2, label='Step4000')
-plt.plot(range(1,len(OGAN_LL_G2_Step5000)),OGAN_LL_G2_Step5000_MovingAverage,'r-', linewidth=2, label='Step5000')
+plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[0], linewidth=2, label='Step2000')
+plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[1], linewidth=2, label='Step3000')
+plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[2], linewidth=2, label='Step4000')
+plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[3], linewidth=2, label='Step5000')
 plt.legend()
+plt.grid()
+plt.title('DCGAN: Log-likelihood of G1 during Testing')
+plt.xlabel('Samples')
+plt.ylabel('Log-likelihood (nats)')
 
-#print(statistics.mean(DCGAN_LL_G2_Step2000))
-#print(statistics.mean(DCGAN_LL_G2_Step3000))
-print(statistics.mean(DCGAN_LL_G2_Step4000))
-print(statistics.mean(DCGAN_LL_G2_Step5000))
 plt.show()
-
-#pdb.set_trace()
