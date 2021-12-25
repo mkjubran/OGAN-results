@@ -11,7 +11,7 @@ dfall['epochs']=dfall['step']/100
 
 
 ##--------- MNIST32: final LL values at different epochs
-dataset='mnist32'
+dataset='mnist32repeat'
 imageSize=32
 nc=1
 epoch=45
@@ -171,12 +171,93 @@ GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
 DCGAN_LL_test_G1 = GAN_LL
 DCGAN_LL_test_G1_MovingAverage = GAN_LL_MovingAverage
 
+##-- OGAN - G2
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G1_E2.pkl';
+Steps=[2000,3000,4000,5000]
+
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
+
+OGAN_LL_G2 = GAN_LL
+OGAN_LL_G2_MovingAverage = GAN_LL_MovingAverage
+
+#-- OGAN - G1
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G2_E1.pkl';
+Steps=[2000,3000,4000,5000]
+
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
+
+OGAN_LL_G1 = GAN_LL
+OGAN_LL_G1_MovingAverage = GAN_LL_MovingAverage
+
+#-- OGAN - test G2
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G1test_E2.pkl';
+Steps=[2000,3000,4000,5000]
+
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
+
+OGAN_LL_test_G2 = GAN_LL
+OGAN_LL_test_G2_MovingAverage = GAN_LL_MovingAverage
+
+#-- OGAN - test G1
+Path='./MeasureLL_tvGAN_mnistimSize32_lambda0.0_lr0.0002_W10.005_W20.005_valbatches100_S2000_GS2019_GS2020_ImSampling/Step'
+filename='likelihood_G2test_E1.pkl';
+Steps=[2000,3000,4000,5000]
+
+with open(Path+str(Steps[0])+'Repeat/'+filename, 'rb') as f:
+   GAN_LL=np.array(pickle.load(f)).reshape(1,-1)
+for Step in Steps[1:]:
+   with open(Path+str(Step)+'Repeat/'+filename, 'rb') as f:
+      GAN_LL=np.vstack((GAN_LL,np.array(pickle.load(f)).reshape(1,-1)))
+GAN_LL_MovingAverage = np.cumsum(GAN_LL, axis=1)/np.arange(1,GAN_LL.shape[1]+1)
+
+OGAN_LL_test_G1 = GAN_LL
+OGAN_LL_test_G1_MovingAverage = GAN_LL_MovingAverage
+
+## ---- G1 and G2
+DCGAN_LL_G1_G2 = np.logaddexp(DCGAN_LL_G1,DCGAN_LL_G2)
+DCGAN_LL_test_G1_G2 = np.logaddexp(DCGAN_LL_test_G1,DCGAN_LL_test_G2)
+OGAN_LL_G1_G2 = np.logaddexp(OGAN_LL_G1,OGAN_LL_G2)
+OGAN_LL_test_G1_G2 = np.logaddexp(OGAN_LL_test_G1,OGAN_LL_test_G2)
+
+
 ## --- plot DCGAN 
+DCGAN_LL = DCGAN_LL_test_G2_MovingAverage
 plt.figure()
-plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[0], linewidth=2, label='Step2000')
-plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[1], linewidth=2, label='Step3000')
-plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[2], linewidth=2, label='Step4000')
-plt.plot(np.arange(0,DCGAN_LL_test_G1_MovingAverage.shape[1]),DCGAN_LL_test_G1_MovingAverage[3], linewidth=2, label='Step5000')
+ax = plt.gca()
+color = next(ax._get_lines.prop_cycler)['color']
+plt.plot(np.arange(10,DCGAN_LL.shape[1]),DCGAN_LL[0][10:], linestyle='--', linewidth=2, color=color, label='epoch20')
+plt.plot(np.arange(1000,DCGAN_LL.shape[1],1000),DCGAN_LL[0][1000::1000], linestyle='', marker='o', color=color)
+
+color = next(ax._get_lines.prop_cycler)['color']
+plt.plot(np.arange(10,DCGAN_LL.shape[1]),DCGAN_LL[1][10:], linestyle='--', linewidth=2, color=color, label='eppch30')
+plt.plot(np.arange(1000,DCGAN_LL.shape[1],1000),DCGAN_LL[1][1000::1000], linestyle='', marker='o', color=color)
+
+color = next(ax._get_lines.prop_cycler)['color']
+plt.plot(np.arange(10,DCGAN_LL.shape[1]),DCGAN_LL[2][10:], linestyle='--', linewidth=2, color=color, label='epoch40')
+plt.plot(np.arange(1000,DCGAN_LL.shape[1],1000),DCGAN_LL[2][1000::1000], linestyle='', marker='o', color=color)
+
+color = next(ax._get_lines.prop_cycler)['color']
+plt.plot(np.arange(10,DCGAN_LL.shape[1]),DCGAN_LL[3][10:], linestyle='--', linewidth=2, color=color, label='epoch50')
+plt.plot(np.arange(1000,DCGAN_LL.shape[1],1000),DCGAN_LL[3][1000::1000], linestyle='', marker='o', color=color, label='epoch50')
+
 plt.legend()
 plt.grid()
 plt.title('DCGAN: Log-likelihood of G1 during Testing')
@@ -184,3 +265,4 @@ plt.xlabel('Samples')
 plt.ylabel('Log-likelihood (nats)')
 
 plt.show()
+
